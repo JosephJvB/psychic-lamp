@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'Go lambda test'
+
+Parameters:
+  DEBUG:
+    Type: String
+    Default: "true"
+    AllowedValues:
+      - "true"
+      - "false"
+
+Globals:
+  Function:
+    Timeout: 10
+    MemorySize: 128
+    Runtime: go1.x
+    Environment:
+      Variables:
+        DEBUG: !Ref DEBUG
+
+Resources:
+  HelloWorld1Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./lambda1
+      Handler: handler.main
+      Policies:
+        - S3CrudPolicy:
+            BucketName: hubspot-csv-backup
+  HelloWorld2Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./lambda2
+      Handler: handler.main
+
+Outputs:
+  HelloWorld1Function:
+    Description: Golang test fn 1
+    Value: !Ref HelloWorld1Function
+  HelloWorld2Function:
+    Description: Golang test fn 2
+    Value: !Ref HelloWorld2Function
