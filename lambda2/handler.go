@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
 	"multi-lambda/shared/models"
 
@@ -9,14 +9,13 @@ import (
 )
 
 func init() {
-	// do startup work here, init clients etc
+	log.SetPrefix("Lambda2:")
+	log.SetFlags(0)
 }
 
 func HandleLambdaEvent(event models.MyRequest) (models.MyResponse, error) {
-	fmt.Println("--- event ---")
-	fmt.Println(event)
-	fmt.Println("--- event.Data ---")
-	fmt.Println(event.Data)
+	log.Println("event:", event)
+	log.Println("event.Data:", event.Data)
 	return models.MyResponse {
 		Data: "yo",
 	}, nil

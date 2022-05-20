@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"strconv"
+	"os"
 
 	"multi-lambda/shared/clients"
 	"multi-lambda/shared/models"
@@ -14,21 +14,21 @@ import (
 func init() {
 	log.SetPrefix("Lambda1:")
 	log.SetFlags(0)
-	// do startup work here, init clients etc
 }
 
 func HandleLambdaEvent(event models.MyRequest) (models.MyResponse, error) {
-	fmt.Println("--- event ---")
-	fmt.Println(event)
-	fmt.Println("--- event.Data ---")
-	fmt.Println(event.Data)
+	log.Println("env.Debug:", os.Getenv("DEBUG"))
+	log.Println("event:", event)
+	log.Println("event.Data:", event.Data)
+	bucket := "hubspot-csv-backup"
+	key := "descriptions.json"
 	responseData := "success"
-	r, err := clients.S3GetObject("hubspot-csv-backup", "descriptions.json")
+	r, err := clients.S3GetObject(bucket, key)
 	if err != nil {
 		log.Fatal(err)
-		responseData = "failed to get object"
+		responseData = fmt.Sprintf("failed to get object s3://%s/%s", bucket, key)
 	}
-	responseData = "object ContentLength: " + strconv.FormatInt(r.ContentLength, 10)
+	responseData = fmt.Sprintf("object ContentLength: %d", r.ContentLength)
 	return models.MyResponse {
 		Data: responseData,
 	}, nil
