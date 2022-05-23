@@ -9,9 +9,14 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-var s3Client *s3.Client
+type IS3 interface {
+	GetObject(bucket string, key string)
+}
+type S3 struct {
+	client *s3.Client
+}
 
-func init() {
+func NewS3Client() *S3 {
 	log.SetPrefix("clients.s3: ")
 	log.SetFlags(0)
 	log.Println("init()")
@@ -19,14 +24,16 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
-	s3Client = s3.NewFromConfig(cfg)
+
+	_client := s3.NewFromConfig(cfg)
+	c := &S3{ _client }
+	return c
 }
-func S3GetObject(bucket string, key string) (*s3.GetObjectOutput, error) {
+func (s *S3) GetObject(bucket string, key string) (*s3.GetObjectOutput, error) {
 	log.Println("GetObject()", bucket, key)
 	params := &s3.GetObjectInput{
 		Bucket: aws.String(bucket),
 		Key: aws.String(key),
 	}
-	return s3Client.GetObject(context.TODO(), params)
+	return s.client.GetObject(context.TODO(), params)
 }

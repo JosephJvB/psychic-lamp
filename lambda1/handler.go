@@ -11,9 +11,12 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
+var s3Client *clients.S3
+
 func init() {
 	log.SetPrefix("Lambda1:")
 	log.SetFlags(0)
+	s3Client = clients.NewS3Client()
 }
 
 func HandleLambdaEvent(event models.MyRequest) (models.MyResponse, error) {
@@ -23,7 +26,7 @@ func HandleLambdaEvent(event models.MyRequest) (models.MyResponse, error) {
 	bucket := "hubspot-csv-backup"
 	key := "descriptions.json"
 	responseData := "success"
-	r, err := clients.S3GetObject(bucket, key)
+	r, err := s3Client.GetObject(bucket, key)
 	if err != nil {
 		log.Fatal(err)
 		responseData = fmt.Sprintf("failed to get object s3://%s/%s", bucket, key)
